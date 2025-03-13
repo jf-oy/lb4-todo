@@ -1,5 +1,5 @@
 import {repository} from '@loopback/repository';
-import {Item, Todo, TodoStatus} from '../models';
+import {Todo, TodoStatus} from '../models';
 import {ItemRepository, TodoRepository} from '../repositories';
 
 export class TodoService {
@@ -10,7 +10,7 @@ export class TodoService {
 
   async createTodoWithItems(request: {
     todo: Omit<Todo, 'id' | 'items'>;
-    items?: Array<Omit<Item, 'id' | 'todoId'>>;
+    items?: Array<{content: string; isCompleted: boolean}>;
   }): Promise<Todo> {
     // 創建 Todo
     const todo = await this.todoRepo.create({
@@ -28,6 +28,12 @@ export class TodoService {
     }
 
     // 返回包含關聯的 Todo
-    return this.todoRepo.findById(todo.id!);
+    const todoWithItems = await this.todoRepo.findById(todo.id!, {
+      include: ['items'],
+    });
+    if (!todoWithItems.items) {
+      todoWithItems.items = [];
+    }
+    return todoWithItems;
   }
 }

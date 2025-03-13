@@ -23,6 +23,7 @@
     "eslint:fix": "npm run eslint -- --fix",
     "pretest": "npm run rebuild",
     "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
+    "test:temp": "lb-mocha --require ts-node/register 'src/__tests__/**/*.ts' --exit",
     "posttest": "npm run lint",
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
     "docker:build": "docker build -t todo .",
@@ -55,10 +56,10 @@
     "@loopback/rest": "^14.0.10",
     "@loopback/rest-explorer": "^7.0.10",
     "@loopback/service-proxy": "^7.0.10",
-    "loopback-connector-mysql": "^7.0.10",
-    "mysql": "^2.18.1",
     "dotenv": "^16.4.7",
+    "loopback-connector-mysql": "^7.0.10",
     "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
     "source-map-support": "^0.5.21",
     "tslib": "^2.0.0"
   },
@@ -69,6 +70,7 @@
     "@types/node": "^16.18.123",
     "eslint": "^8.57.1",
     "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
     "typescript": "~5.2.2"
   }
 }
