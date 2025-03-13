@@ -1,6 +1,18 @@
+import * as dotenv from 'dotenv';
+import * as path from 'path';
 import {ApplicationConfig, TodoApplication} from './application';
-
 export * from './application';
+
+const env = process.env.NODE_ENV || 'dev';
+const envPath = path.resolve(__dirname, '..', `.env.${env}`);
+
+// 載入環境變數
+const result = dotenv.config({path: envPath});
+if (result.error) {
+  console.error(`Failed to load .env file from ${envPath}:`, result.error);
+} else {
+  console.log('Loaded .env from:', envPath);
+}
 
 export async function main(options: ApplicationConfig = {}) {
   const app = new TodoApplication(options);
