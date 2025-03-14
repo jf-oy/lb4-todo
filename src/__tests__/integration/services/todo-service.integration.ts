@@ -31,7 +31,10 @@ describe('TodoService Integration Tests', () => {
     await sandbox.reset();
 
     app = new TodoApplication({
-      rest: {port: 0},
+      rest: {
+        port: 0, // 使用隨機端口
+        host: '127.0.0.1', // 明確指定 IPv4 地址
+      },
     });
     await app.boot();
     await app.migrateSchema({

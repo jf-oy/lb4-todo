@@ -8,7 +8,7 @@ services:
     volumes:
       - ..:/workspaces/todo-loopback:cached
     ports:
-      - '3001}:3000'
+      - '3001:3000'
     command: sleep infinity
     env_file:
       - ../.env.dev
@@ -39,7 +39,7 @@ services:
           'localhost',
           '-u',
           'root',
-          '-p${DB_ROOT_PASSWORD}',
+          '-p${MYSQL_ROOT_PASSWORD}',
         ]
       timeout: 10s
       retries: 10

@@ -39,7 +39,7 @@ services:
           'localhost',
           '-u',
           'root',
-          '-p${DB_ROOT_PASSWORD}',
+          '-p${MYSQL_ROOT_PASSWORD}',
         ]
       interval: 10s
       timeout: 5s

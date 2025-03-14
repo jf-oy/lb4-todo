@@ -7,35 +7,43 @@ import {
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
-import path from 'path';
+import * as path from 'path';
 import {MySequence} from './sequence';
+import {TodoService} from './services/todo.service';
 
 export {ApplicationConfig};
+
 export class TodoApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
-    // Set up the custom sequence
     this.sequence(MySequence);
-
-    // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
 
-    // Customize @loopback/rest-explorer configuration here
     this.configure(RestExplorerBindings.COMPONENT).to({
       path: '/explorer',
     });
     this.component(RestExplorerComponent);
 
+    this.service(TodoService);
+
     this.projectRoot = __dirname;
-    // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
       controllers: {
-        // Customize ControllerBooter Conventions here
         dirs: ['controllers'],
-        extensions: ['.controller.js'],
+        extensions: ['.controller.ts', '.controller.js'], // 支援 .ts 和 .js
+        nested: true,
+      },
+      datasources: {
+        dirs: ['datasources'],
+        extensions: ['.datasource.ts', '.datasource.js'],
+        nested: true,
+      },
+      repositories: {
+        dirs: ['repositories'],
+        extensions: ['.repository.ts', '.repository.js'],
         nested: true,
       },
     };

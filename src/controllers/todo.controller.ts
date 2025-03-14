@@ -4,7 +4,6 @@ import {
   del,
   get,
   getModelSchemaRef,
-  operation,
   param,
   patch,
   post,
@@ -69,86 +68,28 @@ export class TodoController {
     return this.todoService.createTodoWithItems(request);
   }
 
-  // @get('/todos')
-  @operation('get', '/todos', {
-    parameters: [
-      {
-        name: 'filter',
-        in: 'query',
-        description: 'Filter todos with custom criteria',
+  @get('/todos')
+  @response(200, {
+    description: 'Array of Todo model instances',
+    content: {
+      'application/json': {
         schema: {
-          type: 'object',
-          example: {
-            where: {
-              status: 'ACTIVE',
-            },
-            include: [
-              {
-                relation: 'items',
-              },
-            ],
-            order: ['createdAt DESC'],
-            limit: 10,
-            skip: 0,
-            fields: {
-              id: true,
-              title: true,
-              status: true,
-              createdAt: true,
-            },
-          },
-        },
-      },
-    ],
-    responses: {
-      '200': {
-        description: 'Array of Todo model instances',
-        content: {
-          'application/json': {
-            schema: {
-              type: 'array',
-              items: getModelSchemaRef(Todo, {includeRelations: true}),
-            },
-          },
+          type: 'array',
+          items: getModelSchemaRef(Todo, {includeRelations: true}),
         },
       },
     },
   })
   async find(
-    @param({
-      name: 'filter',
-      in: 'query',
-      schema: {
-        type: 'object',
-        example: {
-          where: {
-            status: 'ACTIVE',
-          },
-          include: [
-            {
-              relation: 'items',
-            },
-          ],
-          order: ['createdAt DESC'],
-          limit: 10,
-          skip: 0,
-          fields: {
-            id: true,
-            title: true,
-            status: true,
-            createdAt: true,
-          },
-        },
-      },
-    })
+    @param.filter(Todo)
     filter?: Filter<Todo>,
   ): Promise<Todo[]> {
-    const mergedFilter = filter?.include
-      ? filter
-      : {
-          ...filter,
-          include: [{relation: 'items'}],
-        };
+    // console.log('Raw Filter:', JSON.stringify(filter)); // 檢查原始 filter
+    const mergedFilter: Filter<Todo> = {
+      ...filter,
+      include: filter?.include ?? [{relation: 'items'}],
+    };
+    // console.log('Merged Filter:', JSON.stringify(mergedFilter));
     return this.todoRepository.find(mergedFilter);
   }
 
@@ -165,7 +106,13 @@ export class TodoController {
     @param.path.number('id') id: number,
     @param.filter(Todo, {exclude: 'where'}) filter?: FilterExcludingWhere<Todo>,
   ): Promise<Todo> {
-    return this.todoRepository.findById(id, filter);
+    // console.log('Raw Filter:', JSON.stringify(filter));
+    const mergedFilter = {
+      ...filter,
+      include: filter?.include ?? [{relation: 'items'}],
+    };
+    // console.log('Merged Filter:', JSON.stringify(mergedFilter));
+    return this.todoRepository.findById(id, mergedFilter);
   }
 
   @patch('/todos/{id}')
