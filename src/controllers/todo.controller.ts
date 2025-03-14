@@ -82,7 +82,13 @@ export class TodoController {
     },
   })
   async find(@param.filter(Todo) filter?: Filter<Todo>): Promise<Todo[]> {
-    return this.todoRepository.find(filter);
+    const mergedFilter = filter?.include
+      ? filter
+      : {
+          ...filter,
+          include: [{relation: 'items'}],
+        };
+    return this.todoRepository.find(mergedFilter);
   }
 
   @get('/todos/{id}')
