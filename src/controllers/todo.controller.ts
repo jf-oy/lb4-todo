@@ -4,6 +4,7 @@ import {
   del,
   get,
   getModelSchemaRef,
+  operation,
   param,
   patch,
   post,
@@ -13,7 +14,6 @@ import {
 import {Item, Todo, TodoStatus} from '../models';
 import {TodoRepository} from '../repositories';
 import {TodoService} from '../services/todo.service';
-
 export class TodoController {
   constructor(
     @repository(TodoRepository)
@@ -69,19 +69,80 @@ export class TodoController {
     return this.todoService.createTodoWithItems(request);
   }
 
-  @get('/todos')
-  @response(200, {
-    description: 'Array of Todo model instances',
-    content: {
-      'application/json': {
+  // @get('/todos')
+  @operation('get', '/todos', {
+    parameters: [
+      {
+        name: 'filter',
+        in: 'query',
+        description: 'Filter todos with custom criteria',
         schema: {
-          type: 'array',
-          items: getModelSchemaRef(Todo, {includeRelations: true}),
+          type: 'object',
+          example: {
+            where: {
+              status: 'ACTIVE',
+            },
+            include: [
+              {
+                relation: 'items',
+              },
+            ],
+            order: ['createdAt DESC'],
+            limit: 10,
+            skip: 0,
+            fields: {
+              id: true,
+              title: true,
+              status: true,
+              createdAt: true,
+            },
+          },
+        },
+      },
+    ],
+    responses: {
+      '200': {
+        description: 'Array of Todo model instances',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: getModelSchemaRef(Todo, {includeRelations: true}),
+            },
+          },
         },
       },
     },
   })
-  async find(@param.filter(Todo) filter?: Filter<Todo>): Promise<Todo[]> {
+  async find(
+    @param({
+      name: 'filter',
+      in: 'query',
+      schema: {
+        type: 'object',
+        example: {
+          where: {
+            status: 'ACTIVE',
+          },
+          include: [
+            {
+              relation: 'items',
+            },
+          ],
+          order: ['createdAt DESC'],
+          limit: 10,
+          skip: 0,
+          fields: {
+            id: true,
+            title: true,
+            status: true,
+            createdAt: true,
+          },
+        },
+      },
+    })
+    filter?: Filter<Todo>,
+  ): Promise<Todo[]> {
     const mergedFilter = filter?.include
       ? filter
       : {
@@ -116,11 +177,21 @@ export class TodoController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Todo, {partial: true}),
+          schema: {
+            type: 'object',
+            properties: {
+              title: {type: 'string'},
+              subtitle: {type: 'string'},
+              status: {
+                type: 'string',
+                enum: Object.values(TodoStatus),
+              },
+            },
+          },
         },
       },
     })
-    todo: Todo,
+    todo: Partial<Todo>,
   ): Promise<void> {
     await this.todoRepository.updateById(id, todo);
   }
