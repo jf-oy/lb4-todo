@@ -32,31 +32,45 @@
 ### 使用 Dev Container 開發（推薦）
 
 1. 安裝必要的工具：
+
    - 安裝 [Docker Desktop](https://www.docker.com/products/docker-desktop)
    - 安裝 [Visual Studio Code](https://code.visualstudio.com/)
    - 在 VS Code 中安裝 [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) 擴展
 
 2. 配置環境變數：
+
 ```bash
 cp .env.example .env.dev
 ```
+
 編輯 `.env.dev` 文件，設置必要的環境變數：
 
 3. 啟動開發環境：
+
    - 在 VS Code 中打開專案資料夾
    - 當提示時，點擊 "Reopen in Container"，或使用命令面板（F1）執行 "Dev Containers: Reopen in Container"
    - 等待容器建立和依賴安裝完成
+
+4. 開發相關指令
+
+```bash
+npm run build
+npm run migrate
+npm start
+```
 
 ## 生產環境部署
 
 ### 使用 Docker（推薦）
 
 1. 配置生產環境變數：
+
 ```bash
 cp .env.example .env.prod
 ```
 
 2. 構建並啟動容器：
+
 ```bash
 docker-compose --env-file .env.prod -f docker-compose.prod.yml build
 docker-compose --env-file .env.prod -f docker-compose.prod.yml up -d
@@ -65,15 +79,19 @@ docker-compose --env-file .env.prod -f docker-compose.prod.yml up -d
 ## API 功能
 
 服務啟動後，可以通過以下地址查看完整的 API 文檔：
+
 - http://localhost:3000/explorer
 
 ### Todo API 端點
 
 #### 獲取所有待辦事項
+
 ```http
 GET /todos
 ```
+
 支援過濾參數：
+
 ```typescript
 {
   "filter": {
@@ -98,10 +116,13 @@ GET /todos
 ```
 
 #### 獲取特定待辦事項
+
 ```http
 GET /todos/{id}
 ```
+
 支援過濾參數：
+
 ```typescript
 {
   "filter": {
@@ -124,10 +145,13 @@ GET /todos/{id}
 ```
 
 #### 創建待辦事項
+
 ```http
 POST /todos
 ```
+
 請求體範例：
+
 ```json
 {
   "todo": {
@@ -150,11 +174,13 @@ POST /todos
 ```
 
 #### 更新待辦事項
+
 ```http
 PATCH /todos/{id}
 ```
 
 #### 刪除待辦事項
+
 ```http
 DELETE /todos/{id}
 ```
@@ -162,10 +188,13 @@ DELETE /todos/{id}
 ### Item API 端點
 
 #### 獲取特定待辦事項的所有項目
+
 ```http
 GET /todos/{todoId}/items
 ```
+
 支援過濾參數：
+
 ```typescript
 {
   "filter": {
@@ -181,16 +210,19 @@ GET /todos/{todoId}/items
 ```
 
 #### 創建項目
+
 ```http
 POST /todos/{todoId}/items
 ```
 
 #### 更新項目
+
 ```http
 PATCH /items/{id}
 ```
 
 #### 刪除項目
+
 ```http
 DELETE /items/{id}
 ```
@@ -198,6 +230,7 @@ DELETE /items/{id}
 ## 數據庫遷移
 
 執行數據庫遷移：
+
 ```bash
 npm run migrate
 ```
