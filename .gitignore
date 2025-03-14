@@ -66,5 +66,14 @@ typings/
 # Emacs auto-save file
 \#*#
 
+# Environment variables
 .env
 .env.*
+!.env.example
+
+# Loopback
+dist
+*.log
+node_modules
+
+.sandbox/*
